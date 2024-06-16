@@ -6,6 +6,7 @@ This TestPlugin simply publishes event every 3s. It sends a big JSON message on 
 The TestConsumer is something that subscribed to the above event and expected to receive all the events in order.
 
 ## Issue Reported
-The TestConsumer is receiving only the 1st 3 events. The 4th will not be received but the 5th will be received but there will be a message Deserialize error reported. After that No event will be received.
-
-
+The TestConsumer is receiving only the 1st 3 events.
+The 4th will not be notified to the Consumer. Stuck at Thunder Layer itself.
+The 5th will be received by Thunder layer and it will mess it up with the 4th message that is yet to be notified; and Deserialize errors will be reported combining both 4th & 5th messages.
+After that No event will be received/notified. Thunder layer will be in bad state.
