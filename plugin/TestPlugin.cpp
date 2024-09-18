@@ -21,7 +21,6 @@ namespace WPEFramework
 
             virtual const string Initialize(PluginHost::IShell* service) override
             {
-                // Syslog Startup messages are always printed by default
                 SYSLOG(Logging::Startup, (_T("Initializing TestPlugin")));
 
                 // Register a method for triggering event
@@ -51,17 +50,27 @@ namespace WPEFramework
             uint32_t StartPublishing(const JsonObject& parameters, JsonObject& response)
             {
                 SYSLOG(Logging::Startup, (_T("Called StartPublishing")));
-                m_isThreadRunning = true;
-                m_publishThread = std::thread(&TestPlugin::PublishingThread, this);
+                std::string json;
+                parameters.ToString(json);
+                SYSLOG(Logging::Startup, (_T("@@@@@ %s"), json.c_str()));
+
+                if (!m_isThreadRunning)
+                {
+                    m_isThreadRunning = true;
+                    m_publishThread = std::thread(&TestPlugin::PublishingThread, this);
+                }
                 return 0;
             }
 
             uint32_t StopPublishing(const JsonObject& parameters, JsonObject& response)
             {
                 SYSLOG(Logging::Startup, (_T("Called StopPublishing")));
-                m_isThreadRunning = false;
-                if (m_publishThread.joinable()) {
-                    m_publishThread.join();
+                if (m_isThreadRunning)
+                {
+                    m_isThreadRunning = false;
+                    if (m_publishThread.joinable()) {
+                        m_publishThread.join();
+                    }
                 }
                 return 0;
             }
